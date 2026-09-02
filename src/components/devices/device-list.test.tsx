@@ -5,9 +5,11 @@ import { MOCK_DEVICES } from "@/features/devices/mock-data";
 
 import { DeviceList } from "./device-list";
 
+const emptyState = <p>Nothing to show</p>;
+
 describe("DeviceList", () => {
   it("shows a skeleton while devices are loading", () => {
-    render(<DeviceList devices={[]} isPending />);
+    render(<DeviceList devices={[]} isPending emptyState={emptyState} />);
 
     expect(
       screen.getByRole("status", { name: "Loading devices" }),
@@ -16,7 +18,13 @@ describe("DeviceList", () => {
   });
 
   it("renders one table row per device", () => {
-    render(<DeviceList devices={MOCK_DEVICES} isPending={false} />);
+    render(
+      <DeviceList
+        devices={MOCK_DEVICES}
+        isPending={false}
+        emptyState={emptyState}
+      />,
+    );
 
     const rows = within(screen.getByRole("table")).getAllByRole("row");
 
@@ -25,7 +33,13 @@ describe("DeviceList", () => {
   });
 
   it("shows every field of a device", () => {
-    render(<DeviceList devices={MOCK_DEVICES.slice(0, 1)} isPending={false} />);
+    render(
+      <DeviceList
+        devices={MOCK_DEVICES.slice(0, 1)}
+        isPending={false}
+        emptyState={emptyState}
+      />,
+    );
 
     const table = within(screen.getByRole("table"));
 
@@ -36,16 +50,24 @@ describe("DeviceList", () => {
   });
 
   it("renders a card for each device alongside the table", () => {
-    render(<DeviceList devices={MOCK_DEVICES} isPending={false} />);
+    render(
+      <DeviceList
+        devices={MOCK_DEVICES}
+        isPending={false}
+        emptyState={emptyState}
+      />,
+    );
 
     // Both presentations are in the DOM; CSS shows exactly one at a time.
     expect(screen.getAllByRole("listitem")).toHaveLength(MOCK_DEVICES.length);
   });
 
-  it("shows an empty state when there are no devices", () => {
-    render(<DeviceList devices={[]} isPending={false} />);
+  it("shows the given empty state when there are no devices", () => {
+    render(
+      <DeviceList devices={[]} isPending={false} emptyState={emptyState} />,
+    );
 
-    expect(screen.getByText("No devices yet")).toBeVisible();
+    expect(screen.getByText("Nothing to show")).toBeVisible();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 });

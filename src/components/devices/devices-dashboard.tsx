@@ -1,11 +1,32 @@
 "use client";
 
-import { useDevices } from "@/features/devices/queries";
+import { useMemo } from "react";
 
+import { Button } from "@/components/ui/button";
+import { filterDevices } from "@/features/devices/filter-devices";
+import {
+  DEFAULT_FILTERS,
+  hasActiveFilters,
+} from "@/features/devices/filter-params";
+import { useDevices } from "@/features/devices/queries";
+import type { Device } from "@/features/devices/types";
+import { useDeviceFilters } from "@/hooks/use-device-filters";
+
+import { DeviceEmptyState } from "./device-empty-state";
+import { DeviceFilters } from "./device-filters";
 import { DeviceList } from "./device-list";
 
+const NO_DEVICES: readonly Device[] = [];
+
 export function DevicesDashboard() {
-  const { data: devices, isPending, isError, refetch } = useDevices();
+  const { filters, setFilters } = useDeviceFilters();
+  const { data, isPending, isError, refetch } = useDevices();
+
+  const devices = data ?? NO_DEVICES;
+  const visibleDevices = useMemo(
+    () => filterDevices(devices, filters),
+    [devices, filters],
+  );
 
   if (isError) {
     return (
@@ -16,16 +37,60 @@ export function DevicesDashboard() {
         <p className="mt-1 text-sm text-rose-700/80 dark:text-rose-300/80">
           Something went wrong while reaching the device registry.
         </p>
-        <button
-          type="button"
+        <Button
+          variant="danger"
+          className="mt-4"
           onClick={() => void refetch()}
-          className="mt-4 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-rose-700"
         >
           Try again
-        </button>
+        </Button>
       </div>
     );
   }
 
-  return <DeviceList devices={devices ?? []} isPending={isPending} />;
+  const isFiltered = hasActiveFilters(filters);
+
+  return (
+    <div className="space-y-4">
+      <DeviceFilters
+        filters={filters}
+        onSearchChange={(search) => setFilters({ search })}
+        onStatusChange={(status) => setFilters({ status })}
+      />
+
+      <p aria-live="polite" className="text-muted text-sm">
+        {isPending
+          ? "Loading devices…"
+          : `Showing ${visibleDevices.length} of ${devices.length} ${
+              devices.length === 1 ? "device" : "devices"
+            }`}
+      </p>
+
+      <DeviceList
+        devices={visibleDevices}
+        isPending={isPending}
+        emptyState={
+          isFiltered ? (
+            <DeviceEmptyState
+              title="No devices match these filters"
+              description="Try a different name or IP address, or widen the status filter."
+              action={
+                <Button
+                  variant="secondary"
+                  onClick={() => setFilters(DEFAULT_FILTERS)}
+                >
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <DeviceEmptyState
+              title="No devices yet"
+              description="Devices you register will show up here with their latest reachability."
+            />
+          )
+        }
+      />
+    </div>
+  );
 }

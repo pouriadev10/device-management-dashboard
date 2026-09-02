@@ -4,7 +4,13 @@ import { DevicesDashboard } from "@/components/devices/devices-dashboard";
 
 export const metadata: Metadata = { title: "Devices" };
 
-export default function DevicesPage() {
+export default async function DevicesPage(props: PageProps<"/devices">) {
+  // Reading searchParams opts this route into dynamic rendering, which is what
+  // makes the permalink work properly: useSearchParams() inside the dashboard is
+  // then already populated during the server render, so a shared link arrives
+  // filtered instead of flashing the full list and correcting itself.
+  await props.searchParams;
+
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
       <div className="space-y-1">
