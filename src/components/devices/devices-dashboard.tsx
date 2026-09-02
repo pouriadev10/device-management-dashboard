@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { filterDevices } from "@/features/devices/filter-devices";
@@ -8,10 +8,11 @@ import {
   DEFAULT_FILTERS,
   hasActiveFilters,
 } from "@/features/devices/filter-params";
-import { useDevices } from "@/features/devices/queries";
+import { useDeleteDevice, useDevices } from "@/features/devices/queries";
 import type { Device } from "@/features/devices/types";
 import { useDeviceFilters } from "@/hooks/use-device-filters";
 
+import { DeleteDeviceDialog } from "./delete-device-dialog";
 import { DeviceEmptyState } from "./device-empty-state";
 import { DeviceFilters } from "./device-filters";
 import { DeviceList } from "./device-list";
@@ -21,6 +22,10 @@ const NO_DEVICES: readonly Device[] = [];
 export function DevicesDashboard() {
   const { filters, setFilters } = useDeviceFilters();
   const { data, isPending, isError, refetch } = useDevices();
+  const deleteDevice = useDeleteDevice();
+
+  // Holding the device rather than a boolean means the confirmation can name it.
+  const [deviceToDelete, setDeviceToDelete] = useState<Device | null>(null);
 
   const devices = data ?? NO_DEVICES;
   const visibleDevices = useMemo(
@@ -48,8 +53,6 @@ export function DevicesDashboard() {
     );
   }
 
-  const isFiltered = hasActiveFilters(filters);
-
   return (
     <div className="space-y-4">
       <DeviceFilters
@@ -69,8 +72,9 @@ export function DevicesDashboard() {
       <DeviceList
         devices={visibleDevices}
         isPending={isPending}
+        onDelete={setDeviceToDelete}
         emptyState={
-          isFiltered ? (
+          hasActiveFilters(filters) ? (
             <DeviceEmptyState
               title="No devices match these filters"
               description="Try a different name or IP address, or widen the status filter."
@@ -89,6 +93,17 @@ export function DevicesDashboard() {
               description="Devices you register will show up here with their latest reachability."
             />
           )
+        }
+      />
+
+      <DeleteDeviceDialog
+        device={deviceToDelete}
+        isDeleting={deleteDevice.isPending}
+        onCancel={() => setDeviceToDelete(null)}
+        onConfirm={(device) =>
+          deleteDevice.mutate(device.id, {
+            onSuccess: () => setDeviceToDelete(null),
+          })
         }
       />
     </div>

@@ -1,15 +1,37 @@
-import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { MOCK_DEVICES } from "@/features/devices/mock-data";
+import type { Device } from "@/features/devices/types";
 
 import { DeviceList } from "./device-list";
 
 const emptyState = <p>Nothing to show</p>;
 
+function renderList({
+  devices = MOCK_DEVICES,
+  isPending = false,
+}: {
+  devices?: readonly Device[];
+  isPending?: boolean;
+} = {}) {
+  const onDelete = vi.fn();
+
+  render(
+    <DeviceList
+      devices={devices}
+      isPending={isPending}
+      emptyState={emptyState}
+      onDelete={onDelete}
+    />,
+  );
+
+  return { onDelete };
+}
+
 describe("DeviceList", () => {
   it("shows a skeleton while devices are loading", () => {
-    render(<DeviceList devices={[]} isPending emptyState={emptyState} />);
+    renderList({ devices: [], isPending: true });
 
     expect(
       screen.getByRole("status", { name: "Loading devices" }),
@@ -18,13 +40,7 @@ describe("DeviceList", () => {
   });
 
   it("renders one table row per device", () => {
-    render(
-      <DeviceList
-        devices={MOCK_DEVICES}
-        isPending={false}
-        emptyState={emptyState}
-      />,
-    );
+    renderList();
 
     const rows = within(screen.getByRole("table")).getAllByRole("row");
 
@@ -33,13 +49,7 @@ describe("DeviceList", () => {
   });
 
   it("shows every field of a device", () => {
-    render(
-      <DeviceList
-        devices={MOCK_DEVICES.slice(0, 1)}
-        isPending={false}
-        emptyState={emptyState}
-      />,
-    );
+    renderList({ devices: MOCK_DEVICES.slice(0, 1) });
 
     const table = within(screen.getByRole("table"));
 
@@ -50,22 +60,37 @@ describe("DeviceList", () => {
   });
 
   it("renders a card for each device alongside the table", () => {
-    render(
-      <DeviceList
-        devices={MOCK_DEVICES}
-        isPending={false}
-        emptyState={emptyState}
-      />,
-    );
+    renderList();
 
     // Both presentations are in the DOM; CSS shows exactly one at a time.
     expect(screen.getAllByRole("listitem")).toHaveLength(MOCK_DEVICES.length);
   });
 
-  it("shows the given empty state when there are no devices", () => {
-    render(
-      <DeviceList devices={[]} isPending={false} emptyState={emptyState} />,
+  it("names the device in each delete button", () => {
+    renderList({ devices: MOCK_DEVICES.slice(0, 1) });
+
+    // One in the table, one in the card.
+    expect(
+      screen.getAllByRole("button", { name: "Delete Core-Switch-01" }),
+    ).toHaveLength(2);
+  });
+
+  it("asks to delete the device whose button was pressed", () => {
+    const { onDelete } = renderList();
+
+    fireEvent.click(
+      within(screen.getByRole("table")).getByRole("button", {
+        name: "Delete Storage-NAS",
+      }),
     );
+
+    expect(onDelete).toHaveBeenCalledExactlyOnceWith(
+      MOCK_DEVICES.find((device) => device.name === "Storage-NAS"),
+    );
+  });
+
+  it("shows the given empty state when there are no devices", () => {
+    renderList({ devices: [] });
 
     expect(screen.getByText("Nothing to show")).toBeVisible();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();

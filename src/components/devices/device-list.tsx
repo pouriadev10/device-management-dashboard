@@ -10,6 +10,7 @@ type DeviceListProps = {
   devices: readonly Device[];
   isPending: boolean;
   emptyState: ReactNode;
+  onDelete: (device: Device) => void;
 };
 
 /**
@@ -20,6 +21,7 @@ export function DeviceList({
   devices,
   isPending,
   emptyState,
+  onDelete,
 }: DeviceListProps) {
   if (isPending) {
     return <DeviceListSkeleton />;
@@ -31,8 +33,8 @@ export function DeviceList({
 
   return (
     <>
-      <DeviceTable devices={devices} />
-      <DeviceCardList devices={devices} />
+      <DeviceTable devices={devices} onDelete={onDelete} />
+      <DeviceCardList devices={devices} onDelete={onDelete} />
     </>
   );
 }

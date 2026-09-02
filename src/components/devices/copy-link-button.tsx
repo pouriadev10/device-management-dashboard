@@ -30,7 +30,11 @@ export function CopyLinkButton() {
   }
 
   return (
-    <Button variant="secondary" onClick={() => void copyCurrentUrl()}>
+    <Button
+      variant="secondary"
+      className="w-full sm:w-auto"
+      onClick={() => void copyCurrentUrl()}
+    >
       {copied ? "Link copied" : "Copy link"}
     </Button>
   );

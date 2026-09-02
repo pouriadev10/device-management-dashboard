@@ -68,10 +68,10 @@ export function DeviceFilters({
         />
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <fieldset className="min-w-0">
           <legend className="sr-only">Filter by status</legend>
-          <div className="bg-surface-muted flex gap-1 overflow-x-auto rounded-xl border p-1">
+          <div className="bg-surface-muted flex gap-1 rounded-xl border p-1">
             {STATUS_FILTERS.map((status) => {
               const isActive = filters.status === status;
 
@@ -79,7 +79,7 @@ export function DeviceFilters({
                 <label
                   key={status}
                   className={cn(
-                    "cursor-pointer rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors",
+                    "flex-1 cursor-pointer rounded-lg px-3 py-1.5 text-center text-sm font-medium whitespace-nowrap transition-colors sm:flex-none",
                     "focus-within:ring-ring focus-within:ring-2",
                     isActive
                       ? "bg-surface text-foreground shadow-sm"
