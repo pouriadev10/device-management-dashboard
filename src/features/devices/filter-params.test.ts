@@ -5,7 +5,6 @@ import {
   hasActiveFilters,
   parseDeviceFilters,
   serializeDeviceFilters,
-  toSearchParams,
   type DeviceFilters,
 } from "./filter-params";
 
@@ -73,24 +72,6 @@ describe("serializeDeviceFilters", () => {
     const filters: DeviceFilters = { search: "192.168", status: "Warning" };
 
     expect(parse(serialize(filters))).toEqual(filters);
-  });
-});
-
-describe("toSearchParams", () => {
-  it("converts the plain object a Server Component receives", () => {
-    expect(
-      toSearchParams({ search: "router", status: "Online" }).toString(),
-    ).toBe("search=router&status=Online");
-  });
-
-  it("keeps the first value when a param is repeated", () => {
-    expect(toSearchParams({ status: ["Online", "Offline"] }).toString()).toBe(
-      "status=Online",
-    );
-  });
-
-  it("skips params with no value", () => {
-    expect(toSearchParams({ search: undefined }).toString()).toBe("");
   });
 });
 

@@ -1,5 +1,5 @@
-import { cn } from "@/lib/cn";
 import type { DeviceStatus } from "@/features/devices/types";
+import { cn } from "@/lib/cn";
 
 const BADGE_STYLES: Record<DeviceStatus, string> = {
   Online:

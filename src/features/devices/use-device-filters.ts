@@ -7,7 +7,7 @@ import {
   parseDeviceFilters,
   serializeDeviceFilters,
   type DeviceFilters,
-} from "@/features/devices/filter-params";
+} from "./filter-params";
 
 type UseDeviceFiltersResult = {
   filters: DeviceFilters;

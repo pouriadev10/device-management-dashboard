@@ -10,12 +10,13 @@ export function DeviceListSkeleton() {
         {PLACEHOLDER_ROWS.map((row) => (
           <div
             key={row}
-            className="grid grid-cols-4 items-center gap-4 border-b px-5 py-4 last:border-b-0"
+            className="grid grid-cols-5 items-center gap-4 border-b px-5 py-4 last:border-b-0"
           >
             <Skeleton className="h-4 w-32" />
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="h-4 w-20" />
+            <Skeleton className="ml-auto h-4 w-12" />
           </div>
         ))}
       </div>

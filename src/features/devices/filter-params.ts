@@ -15,23 +15,6 @@ export const DEFAULT_FILTERS: DeviceFilters = { search: "", status: "All" };
 export const SEARCH_PARAM = "search";
 export const STATUS_PARAM = "status";
 
-type RawSearchParams = Record<string, string | string[] | undefined>;
-
-/**
- * Normalises the plain object a Server Component receives into the same
- * `URLSearchParams` the client works with, so both sides share one parser.
- */
-export function toSearchParams(raw: RawSearchParams): URLSearchParams {
-  const params = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(raw)) {
-    const first = Array.isArray(value) ? value[0] : value;
-    if (first !== undefined) params.set(key, first);
-  }
-
-  return params;
-}
-
 /**
  * Reads filters out of a query string. Anything unrecognised falls back to the
  * default rather than filtering everything away, and a status is matched

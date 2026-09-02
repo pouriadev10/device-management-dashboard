@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import type { Device } from "@/features/devices/types";
 
+import { DeleteDeviceButton } from "./delete-device-button";
 import { DeviceStatusBadge } from "./device-status-badge";
 
 type DeviceCardProps = {
@@ -28,15 +28,7 @@ export function DeviceCard({ device, onDelete }: DeviceCardProps) {
       </dl>
 
       <div className="mt-4 flex justify-end border-t pt-3">
-        <Button
-          variant="ghost"
-          size="sm"
-          aria-label={`Delete ${device.name}`}
-          className="text-muted hover:text-rose-600 dark:hover:text-rose-400"
-          onClick={() => onDelete(device)}
-        >
-          Delete
-        </Button>
+        <DeleteDeviceButton device={device} onDelete={onDelete} />
       </div>
     </li>
   );

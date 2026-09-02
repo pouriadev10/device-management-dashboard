@@ -89,6 +89,19 @@ describe("DeviceList", () => {
     );
   });
 
+  it("asks to delete from the card list too, not only the table", () => {
+    const { onDelete } = renderList({ devices: MOCK_DEVICES.slice(2, 3) });
+
+    // The cards are the mobile presentation; their button is a separate element
+    // from the table's and has to be wired up in its own right.
+    const card = screen.getByRole("listitem");
+    fireEvent.click(
+      within(card).getByRole("button", { name: "Delete Storage-NAS" }),
+    );
+
+    expect(onDelete).toHaveBeenCalledExactlyOnceWith(MOCK_DEVICES[2]);
+  });
+
   it("shows the given empty state when there are no devices", () => {
     renderList({ devices: [] });
 

@@ -1,28 +1,43 @@
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
+
+/** The wiring a control needs to be announced correctly with its label and error. */
+type FieldControlProps = {
+  id: string;
+  "aria-invalid": true | undefined;
+  "aria-describedby": string | undefined;
+};
 
 type FieldProps = {
-  /** Must match the id of the control rendered as `children`. */
-  htmlFor: string;
   label: string;
   error?: string | undefined;
-  children: ReactNode;
+  children: (control: FieldControlProps) => ReactNode;
 };
 
 /**
- * Label, control and validation message as one unit. The message carries the
- * id that the control points at with `aria-describedby`, so screen readers
- * announce the error with the field rather than as loose text.
+ * Label, control and validation message as one unit.
+ *
+ * The ids are generated here and handed to the control, rather than each call
+ * site inventing a string and repeating it three times. That coupling used to
+ * be invisible: renaming a field's id silently detached its error message from
+ * the control, and the check that would have caught it is the one nobody runs.
  */
-export function Field({ htmlFor, label, error, children }: FieldProps) {
+export function Field({ label, error, children }: FieldProps) {
+  const id = useId();
+  const errorId = `${id}-error`;
+
   return (
     <div className="space-y-1.5">
-      <label htmlFor={htmlFor} className="block text-sm font-medium">
+      <label htmlFor={id} className="block text-sm font-medium">
         {label}
       </label>
-      {children}
+      {children({
+        id,
+        "aria-invalid": error ? true : undefined,
+        "aria-describedby": error ? errorId : undefined,
+      })}
       {error ? (
         <p
-          id={`${htmlFor}-error`}
+          id={errorId}
           role="alert"
           className="text-sm text-rose-600 dark:text-rose-400"
         >

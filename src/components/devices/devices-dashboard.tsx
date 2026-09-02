@@ -10,11 +10,11 @@ import {
 } from "@/features/devices/filter-params";
 import { useDeleteDevice, useDevices } from "@/features/devices/queries";
 import type { Device } from "@/features/devices/types";
-import { useDeviceFilters } from "@/hooks/use-device-filters";
+import { useDeviceFilters } from "@/features/devices/use-device-filters";
 
 import { DeleteDeviceDialog } from "./delete-device-dialog";
 import { DeviceEmptyState } from "./device-empty-state";
-import { DeviceFilters } from "./device-filters";
+import { DeviceFilterBar } from "./device-filter-bar";
 import { DeviceList } from "./device-list";
 
 const NO_DEVICES: readonly Device[] = [];
@@ -55,7 +55,7 @@ export function DevicesDashboard() {
 
   return (
     <div className="space-y-4">
-      <DeviceFilters
+      <DeviceFilterBar
         filters={filters}
         onSearchChange={(search) => setFilters({ search })}
         onStatusChange={(status) => setFilters({ status })}

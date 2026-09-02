@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import type { Device } from "@/features/devices/types";
 
+import { DeleteDeviceButton } from "./delete-device-button";
 import { DeviceStatusBadge } from "./device-status-badge";
 
 type DeviceTableProps = {
@@ -47,15 +47,7 @@ export function DeviceTable({ devices, onDelete }: DeviceTableProps) {
               </td>
               <td className="text-muted px-5 py-4">{device.lastPing}</td>
               <td className="px-5 py-4 text-right">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label={`Delete ${device.name}`}
-                  className="text-muted hover:text-rose-600 dark:hover:text-rose-400"
-                  onClick={() => onDelete(device)}
-                >
-                  Delete
-                </Button>
+                <DeleteDeviceButton device={device} onDelete={onDelete} />
               </td>
             </tr>
           ))}

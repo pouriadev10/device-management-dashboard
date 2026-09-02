@@ -3,17 +3,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   DEFAULT_FILTERS,
-  type DeviceFilters as DeviceFiltersValue,
+  type DeviceFilters,
 } from "@/features/devices/filter-params";
 
-import { DeviceFilters } from "./device-filters";
+import { DeviceFilterBar } from "./device-filter-bar";
 
-function renderFilters(filters: DeviceFiltersValue = DEFAULT_FILTERS) {
+function renderFilters(filters: DeviceFilters = DEFAULT_FILTERS) {
   const onSearchChange = vi.fn();
   const onStatusChange = vi.fn();
 
   const { rerender } = render(
-    <DeviceFilters
+    <DeviceFilterBar
       filters={filters}
       onSearchChange={onSearchChange}
       onStatusChange={onStatusChange}
@@ -35,7 +35,7 @@ function typeSearch(text: string) {
   }
 }
 
-describe("DeviceFilters", () => {
+describe("DeviceFilterBar", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -93,7 +93,7 @@ describe("DeviceFilters", () => {
     const onSearchChange = vi.fn();
 
     const { rerender } = render(
-      <DeviceFilters
+      <DeviceFilterBar
         filters={{ search: "zz", status: "Online" }}
         onSearchChange={onSearchChange}
         onStatusChange={vi.fn()}
@@ -103,7 +103,7 @@ describe("DeviceFilters", () => {
     // A keystroke lands, then the filters are cleared before it is published.
     fireEvent.change(searchBox(), { target: { value: "zzz" } });
     rerender(
-      <DeviceFilters
+      <DeviceFilterBar
         filters={DEFAULT_FILTERS}
         onSearchChange={onSearchChange}
         onStatusChange={vi.fn()}
@@ -125,7 +125,7 @@ describe("DeviceFilters", () => {
     expect(searchBox()).toHaveValue("router");
 
     rerender(
-      <DeviceFilters
+      <DeviceFilterBar
         filters={DEFAULT_FILTERS}
         onSearchChange={vi.fn()}
         onStatusChange={vi.fn()}

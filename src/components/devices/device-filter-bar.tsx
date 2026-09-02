@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import {
   STATUS_FILTERS,
-  type DeviceFilters as DeviceFiltersValue,
+  type DeviceFilters,
   type StatusFilter,
 } from "@/features/devices/filter-params";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
@@ -15,17 +15,17 @@ import { CopyLinkButton } from "./copy-link-button";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-type DeviceFiltersProps = {
-  filters: DeviceFiltersValue;
+type DeviceFilterBarProps = {
+  filters: DeviceFilters;
   onSearchChange: (search: string) => void;
   onStatusChange: (status: StatusFilter) => void;
 };
 
-export function DeviceFilters({
+export function DeviceFilterBar({
   filters,
   onSearchChange,
   onStatusChange,
-}: DeviceFiltersProps) {
+}: DeviceFilterBarProps) {
   // The field is uncontrolled so typing stays instant while the URL catches up
   // on its own schedule.
   const inputRef = useRef<HTMLInputElement>(null);

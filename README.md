@@ -54,16 +54,17 @@ The app runs at [http://localhost:3000](http://localhost:3000) and redirects to
 
 ## Scripts
 
-| Script            | What it does                |
-| ----------------- | --------------------------- |
-| `pnpm dev`        | Start the dev server        |
-| `pnpm build`      | Production build            |
-| `pnpm start`      | Serve the production build  |
-| `pnpm test`       | Run the test suite once     |
-| `pnpm test:watch` | Run tests in watch mode     |
-| `pnpm typecheck`  | Type-check without emitting |
-| `pnpm lint`       | Lint with ESLint            |
-| `pnpm format`     | Format with Prettier        |
+| Script               | What it does                     |
+| -------------------- | -------------------------------- |
+| `pnpm dev`           | Start the dev server             |
+| `pnpm build`         | Production build                 |
+| `pnpm start`         | Serve the production build       |
+| `pnpm test`          | Run the test suite once          |
+| `pnpm test:watch`    | Run tests in watch mode          |
+| `pnpm test:coverage` | Run tests with a coverage report |
+| `pnpm typecheck`     | Type-check without emitting      |
+| `pnpm lint`          | Lint with ESLint                 |
+| `pnpm format`        | Format with Prettier             |
 
 ## Tests
 
@@ -71,9 +72,20 @@ The app runs at [http://localhost:3000](http://localhost:3000) and redirects to
 pnpm test
 ```
 
-75 tests covering the parts worth pinning down: IPv4 validation, filtering,
-query-string parsing and serialisation, the debounce, the filter bar, the device
-list, the add form and the delete confirmation.
+```bash
+pnpm test:coverage
+```
+
+132 tests covering the parts worth pinning down: IPv4 validation, filtering,
+query-string parsing and serialisation, the debounce, the URL-backed filter
+hook, the mock API, the TanStack cache updates, the filter bar, the device list,
+the add and delete flows, and the dashboard that ties them together.
+
+Coverage sits just under 100% of `src` outside the route files; what remains
+uncovered is two defensive null checks on refs that cannot be reached from a
+test. The tests worth reading first are `use-device-filters.test.ts`, which pins
+down the race between a debounced write and a filter that changed underneath it,
+and `devices-dashboard.test.tsx`, which drives the real flows end to end.
 
 ## Project structure
 
@@ -84,20 +96,23 @@ src/
 │   ├── layout/           # app chrome
 │   ├── ui/               # generic primitives: button, input, dialog, …
 │   └── devices/          # device-specific components
-├── features/devices/     # the domain: schemas, types, mock API, queries, filtering
-├── hooks/                # reusable hooks
+├── features/devices/     # the domain: schemas, types, mock API, queries,
+│                         #   filtering, and the URL-filter hook
+├── hooks/                # hooks with no domain knowledge
 └── lib/                  # small shared utilities
 ```
 
 Domain logic lives in `features/devices` and holds no JSX, which keeps the
 interesting parts — validation, filtering, URL serialisation — testable without
-rendering anything.
+rendering anything. Anything that knows what a device is belongs there, so
+`hooks/` is reserved for genuinely generic ones.
 
 ## Decisions worth explaining
 
 **The URL is the filter state.** Not a copy of it. There is no `useState` holding
-the search term alongside the query string, so the two cannot drift. Filters are
-parsed on the server from the page's `searchParams`, which means a shared link
+the search term alongside the query string, so the two cannot drift. The devices
+route reads `searchParams`, which opts it into dynamic rendering, so
+`useSearchParams` is already populated during the server render — a shared link
 arrives already filtered rather than flashing the full list and correcting
 itself a moment later.
 
