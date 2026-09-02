@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/*
+ * Semantic design tokens. Components reference these rather than raw palette
+ * values, so the whole theme is adjustable from this one block.
+ */
+:root {
+  --background: #f5f7fb;
+  --surface: #ffffff;
+  --surface-muted: #f1f5f9;
+  --border: #e2e8f0;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-foreground: #ffffff;
+  --ring: #818cf8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #080b14;
+    --surface: #10151f;
+    --surface-muted: #171d29;
+    --border: #232b3a;
+    --foreground: #e6ebf4;
+    --muted: #94a3b8;
+    --primary: #6366f1;
+    --primary-hover: #818cf8;
+    --primary-foreground: #ffffff;
+    --ring: #4f46e5;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  /* Tailwind v4 defaults borders to currentColor; restore a themed default. */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+  }
+}
