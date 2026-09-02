@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { DevicesDashboard } from "@/components/devices/devices-dashboard";
+
 export const metadata: Metadata = { title: "Devices" };
 
 export default function DevicesPage() {
@@ -12,6 +14,10 @@ export default function DevicesPage() {
         <p className="text-muted text-sm">
           Every device registered on the network, with its current reachability.
         </p>
+      </div>
+
+      <div className="mt-6">
+        <DevicesDashboard />
       </div>
     </main>
   );
