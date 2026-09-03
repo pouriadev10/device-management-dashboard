@@ -65,7 +65,10 @@ export function AddDeviceForm({
         {(field) => (
           <Input
             {...field}
-            inputMode="numeric"
+            // "decimal", not "numeric": the numeric keypad on phones has no dot
+            // key, so the octet separators can't be typed. "decimal" keeps the
+            // number-first keyboard but includes the ".".
+            inputMode="decimal"
             // An address is written left to right whatever the page direction.
             dir="ltr"
             placeholder={t("form.ip.placeholder")}
