@@ -48,21 +48,24 @@ export function Dialog({
         if (event.target === dialogRef.current) onClose();
       }}
       className={cn(
-        "bg-surface text-foreground m-auto w-[calc(100vw-2rem)] max-w-md rounded-2xl border p-0",
-        "backdrop:bg-slate-950/40 backdrop:backdrop-blur-sm",
+        "bg-surface text-foreground rounded-panel shadow-overlay m-auto w-[calc(100vw-2rem)] max-w-md border p-0",
+        "backdrop:bg-[var(--overlay)] backdrop:backdrop-blur-[2px]",
       )}
     >
       <div className="p-6">
-        <h2 id={titleId} className="text-lg font-semibold">
+        <h2 id={titleId} className="text-lg font-semibold tracking-tight">
           {title}
         </h2>
         {description ? (
-          <p id={descriptionId} className="text-muted mt-1 text-sm">
+          <p
+            id={descriptionId}
+            className="text-muted mt-1.5 text-sm text-pretty"
+          >
             {description}
           </p>
         ) : null}
 
-        <div className="mt-5">{children}</div>
+        <div className="mt-6">{children}</div>
       </div>
     </dialog>
   );

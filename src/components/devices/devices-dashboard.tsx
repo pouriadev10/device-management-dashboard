@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { AlertIcon } from "@/components/ui/icons";
 import { filterDevices } from "@/features/devices/filter-devices";
 import {
   DEFAULT_FILTERS,
@@ -11,6 +12,7 @@ import {
 import { useDeleteDevice, useDevices } from "@/features/devices/queries";
 import type { Device } from "@/features/devices/types";
 import { useDeviceFilters } from "@/features/devices/use-device-filters";
+import { useI18n } from "@/features/i18n/i18n-provider";
 
 import { DeleteDeviceDialog } from "./delete-device-dialog";
 import { DeviceEmptyState } from "./device-empty-state";
@@ -20,6 +22,7 @@ import { DeviceList } from "./device-list";
 const NO_DEVICES: readonly Device[] = [];
 
 export function DevicesDashboard() {
+  const { t } = useI18n();
   const { filters, setFilters } = useDeviceFilters();
   const { data, isPending, isError, refetch } = useDevices();
   const deleteDevice = useDeleteDevice();
@@ -35,19 +38,22 @@ export function DevicesDashboard() {
 
   if (isError) {
     return (
-      <div className="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-10 text-center dark:border-rose-500/30 dark:bg-rose-500/10">
-        <h3 className="font-medium text-rose-800 dark:text-rose-200">
-          Could not load devices
+      <div className="border-danger-border bg-danger-soft rounded-panel border px-6 py-10 text-center">
+        <span className="text-danger mx-auto grid size-12 place-items-center">
+          <AlertIcon className="size-6" />
+        </span>
+        <h3 className="text-danger mt-2 font-medium">
+          {t("devices.error.title")}
         </h3>
-        <p className="mt-1 text-sm text-rose-700/80 dark:text-rose-300/80">
-          Something went wrong while reaching the device registry.
+        <p className="text-muted mx-auto mt-1.5 max-w-sm text-sm text-pretty">
+          {t("devices.error.description")}
         </p>
         <Button
           variant="danger"
-          className="mt-4"
+          className="mt-5"
           onClick={() => void refetch()}
         >
-          Try again
+          {t("devices.error.retry")}
         </Button>
       </div>
     );
@@ -63,10 +69,12 @@ export function DevicesDashboard() {
 
       <p aria-live="polite" className="text-muted text-sm">
         {isPending
-          ? "Loading devices…"
-          : `Showing ${visibleDevices.length} of ${devices.length} ${
-              devices.length === 1 ? "device" : "devices"
-            }`}
+          ? t("devices.loading")
+          : t("devices.count", {
+              shown: visibleDevices.length,
+              total: devices.length,
+              count: devices.length,
+            })}
       </p>
 
       <DeviceList
@@ -76,21 +84,21 @@ export function DevicesDashboard() {
         emptyState={
           hasActiveFilters(filters) ? (
             <DeviceEmptyState
-              title="No devices match these filters"
-              description="Try a different name or IP address, or widen the status filter."
+              title={t("devices.noMatches.title")}
+              description={t("devices.noMatches.description")}
               action={
                 <Button
                   variant="secondary"
                   onClick={() => setFilters(DEFAULT_FILTERS)}
                 >
-                  Clear filters
+                  {t("filters.clear")}
                 </Button>
               }
             />
           ) : (
             <DeviceEmptyState
-              title="No devices yet"
-              description="Devices you register will show up here with their latest reachability."
+              title={t("devices.empty.title")}
+              description={t("devices.empty.description")}
             />
           )
         }

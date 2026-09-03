@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { CheckIcon, LinkIcon } from "@/components/ui/icons";
+import { useI18n } from "@/features/i18n/i18n-provider";
 
 /**
  * Copies the current URL, filters included. The whole point of keeping filter
@@ -10,6 +12,7 @@ import { Button } from "@/components/ui/button";
  * should make that obvious rather than leaving it to the address bar.
  */
 export function CopyLinkButton() {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -35,7 +38,8 @@ export function CopyLinkButton() {
       className="w-full sm:w-auto"
       onClick={() => void copyCurrentUrl()}
     >
-      {copied ? "Link copied" : "Copy link"}
+      {copied ? <CheckIcon /> : <LinkIcon />}
+      {copied ? t("filters.copyLink.done") : t("filters.copyLink")}
     </Button>
   );
 }

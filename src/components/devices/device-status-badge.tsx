@@ -1,22 +1,27 @@
+import { useI18n } from "@/features/i18n/i18n-provider";
 import type { DeviceStatus } from "@/features/devices/types";
 import { cn } from "@/lib/cn";
 
+/**
+ * One hue per status, mixed into a tint and a ring in the stylesheet. The
+ * component names the status, not the colour, so light and dark cannot drift
+ * apart here — there is only one set of classes to keep right.
+ */
 const BADGE_STYLES: Record<DeviceStatus, string> = {
-  Online:
-    "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-400/25",
-  Offline:
-    "bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-500/10 dark:text-rose-300 dark:ring-rose-400/25",
-  Warning:
-    "bg-amber-50 text-amber-800 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-400/25",
+  Online: "bg-online-soft text-online ring-online-ring",
+  Offline: "bg-offline-soft text-offline ring-offline-ring",
+  Warning: "bg-warning-soft text-warning ring-warning-ring",
 };
 
 const DOT_STYLES: Record<DeviceStatus, string> = {
-  Online: "bg-emerald-500",
-  Offline: "bg-rose-500",
-  Warning: "bg-amber-500",
+  Online: "bg-online",
+  Offline: "bg-offline",
+  Warning: "bg-warning",
 };
 
 export function DeviceStatusBadge({ status }: { status: DeviceStatus }) {
+  const { t } = useI18n();
+
   return (
     <span
       className={cn(
@@ -24,11 +29,12 @@ export function DeviceStatusBadge({ status }: { status: DeviceStatus }) {
         BADGE_STYLES[status],
       )}
     >
+      {/* Colour alone never carries the status; the dot only reinforces the word. */}
       <span
         aria-hidden
         className={cn("size-1.5 rounded-full", DOT_STYLES[status])}
       />
-      {status}
+      {t(`status.${status}`)}
     </span>
   );
 }

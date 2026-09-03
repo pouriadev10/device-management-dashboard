@@ -1,34 +1,68 @@
 @import "tailwindcss";
 
-/*
- * Semantic design tokens. Components reference these rather than raw palette
- * values, so the whole theme is adjustable from this one block.
- */
+/* ---------------------------------------------------------------------------
+ * Palette
+ *
+ * One declaration per token rather than one per theme: `light-dark()` picks the
+ * arm matching the element's `color-scheme`, and the three short rules further
+ * down set that scheme from the stored choice, falling back to the OS
+ * preference while there is no choice. Keeping each light/dark pair on one line
+ * is the point — a token whose two values have drifted apart is visible here.
+ *
+ * The neutrals carry a little warmth so the surfaces read as paper rather than
+ * as the usual blue-grey, and the accent is the only cool hue in the set, which
+ * is what makes it register as an accent at all.
+ * ------------------------------------------------------------------------- */
 :root {
-  --background: #f5f7fb;
-  --surface: #ffffff;
-  --surface-muted: #f1f5f9;
-  --border: #e2e8f0;
-  --foreground: #0f172a;
-  --muted: #64748b;
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
+  color-scheme: light;
+
+  --background: light-dark(#f6f5f3, #141311);
+  --surface: light-dark(#ffffff, #1c1a18);
+  --surface-muted: light-dark(#efedea, #24221f);
+  --border: light-dark(#e4e0da, #302d29);
+  --border-strong: light-dark(#d2ccc3, #3f3b36);
+  --foreground: light-dark(#1c1a17, #ece8e2);
+  --muted: light-dark(#6d6862, #a09a92);
+
+  --primary: light-dark(#2f4bd0, #4a68e8);
+  --primary-hover: light-dark(#2439ab, #6480f0);
   --primary-foreground: #ffffff;
-  --ring: #818cf8;
+  --ring: light-dark(#7f95ec, #6480f0);
+
+  --danger: light-dark(#c0362b, #e2685c);
+  --danger-hover: light-dark(#9e2b22, #ec8377);
+  --danger-foreground: #ffffff;
+
+  /* One hue per status; the badge tint and ring are mixed from it below. */
+  --status-online: light-dark(#1a7f52, #4fc08a);
+  --status-offline: light-dark(#c0362b, #e2685c);
+  --status-warning: light-dark(#9a6410, #dda13a);
+
+  --overlay: light-dark(rgb(28 26 23 / 0.32), rgb(8 7 6 / 0.6));
+
+  --shadow-panel: 0 1px 2px light-dark(rgb(28 26 23 / 0.05), rgb(0 0 0 / 0.4));
+  --shadow-raised:
+    0 1px 2px light-dark(rgb(28 26 23 / 0.06), rgb(0 0 0 / 0.45)),
+    0 10px 24px -14px light-dark(rgb(28 26 23 / 0.28), rgb(0 0 0 / 0.7));
+  --shadow-overlay: 0 28px 70px -24px
+    light-dark(rgb(28 26 23 / 0.35), rgb(0 0 0 / 0.75));
+
+  --font-ui: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* An explicit choice wins; without one, follow the operating system. Only
+ * `color-scheme` is switched — every token above resolves from it. */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #080b14;
-    --surface: #10151f;
-    --surface-muted: #171d29;
-    --border: #232b3a;
-    --foreground: #e6ebf4;
-    --muted: #94a3b8;
-    --primary: #6366f1;
-    --primary-hover: #818cf8;
-    --primary-foreground: #ffffff;
-    --ring: #4f46e5;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
   }
 }
 
@@ -37,14 +71,72 @@
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
+
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: color-mix(in oklab, var(--primary) 10%, var(--surface));
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: color-mix(in oklab, var(--danger) 8%, var(--surface));
+  --color-danger-border: color-mix(in oklab, var(--danger) 30%, transparent);
+
+  --color-online: var(--status-online);
+  --color-online-soft: color-mix(
+    in oklab,
+    var(--status-online) 12%,
+    var(--surface)
+  );
+  --color-online-ring: color-mix(
+    in oklab,
+    var(--status-online) 30%,
+    transparent
+  );
+
+  --color-offline: var(--status-offline);
+  --color-offline-soft: color-mix(
+    in oklab,
+    var(--status-offline) 12%,
+    var(--surface)
+  );
+  --color-offline-ring: color-mix(
+    in oklab,
+    var(--status-offline) 30%,
+    transparent
+  );
+
+  --color-warning: var(--status-warning);
+  --color-warning-soft: color-mix(
+    in oklab,
+    var(--status-warning) 14%,
+    var(--surface)
+  );
+  --color-warning-ring: color-mix(
+    in oklab,
+    var(--status-warning) 30%,
+    transparent
+  );
+
+  /* Two radii, named for what they wrap: anything you can click, and anything
+   * that holds content. Enough of a step between them to read as deliberate. */
+  --radius-control: 0.625rem;
+  --radius-panel: 0.875rem;
+
+  --shadow-panel: var(--shadow-panel);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-overlay: var(--shadow-overlay);
+
+  /* Overrides Tailwind's own `ease-out`, so every utility picks up this curve. */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 @layer base {
@@ -58,6 +150,141 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    font-family: var(--font-ui);
+  }
+
+  /*
+   * Geist has no Arabic script, and what the browser reaches for instead is
+   * rarely a face anyone would have chosen. Matching on `:lang` rather than on
+   * the document covers both cases at once: the whole page once it is in
+   * Persian, and the lone Persian word on the language button before that.
+   */
+  :lang(fa) {
+    --font-ui: var(--font-vazirmatn), system-ui, sans-serif;
+    font-family: var(--font-ui);
+  }
+
+  /* Digits that hold their column when the value under them changes: the
+   * addresses in the table, and the count above it. */
+  .font-mono,
+  [aria-live] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
+}
+
+@layer components {
+  /* A modal that appears at full size reads as a jump cut. */
+  dialog[open] {
+    animation: dialog-in 200ms var(--ease-out);
+  }
+
+  dialog[open]::backdrop {
+    animation: backdrop-in 200ms var(--ease-out);
+  }
+
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem) scale(0.98);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /*
+   * Which half of a pair the current theme shows. The theme toggle draws both
+   * its icons and both its labels and lets CSS choose between them, so it is
+   * already correct on the first paint — before any script has run, and whether
+   * the theme came from a stored choice or from the operating system.
+   */
+  .theme-light-only {
+    display: block;
+  }
+
+  .theme-dark-only {
+    display: none;
+  }
+
+  [data-theme="dark"] .theme-light-only {
+    display: none;
+  }
+
+  [data-theme="dark"] .theme-dark-only {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-light-only {
+      display: none;
+    }
+
+    :root:not([data-theme="light"]) .theme-dark-only {
+      display: block;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Theme and language changes
+ *
+ * A theme swap repaints every surface at once, which is jarring at full speed.
+ * Where the View Transitions API exists the toggle clips the old snapshot away
+ * over the new theme, collapsing it into the button that was pressed;
+ * `data-theme-changing` is the fallback for browsers without it, and is only
+ * set for the length of the fade.
+ * ------------------------------------------------------------------------- */
+[data-theme-changing],
+[data-theme-changing] *,
+[data-theme-changing] ::before,
+[data-theme-changing] ::after {
+  transition:
+    background-color 260ms var(--ease-out),
+    border-color 260ms var(--ease-out),
+    color 260ms var(--ease-out),
+    fill 260ms var(--ease-out),
+    box-shadow 260ms var(--ease-out);
+}
+
+/* The wipe is the animation, so the cross-fade underneath would only muddy the
+ * colours. The language switch keeps that cross-fade. */
+html[data-view-transition="theme"]::view-transition-old(root),
+html[data-view-transition="theme"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* The new theme sits underneath, whole and unclipped; the old snapshot rides on
+ * top and JS shrinks a circle out of it. Clipping a frozen bitmap composites
+ * the same however heavy the page is, which is what keeps the wipe off the
+ * far corner where rasterising the live new page used to make it lag. */
+html[data-view-transition="theme"]::view-transition-new(root) {
+  z-index: 0;
+}
+
+html[data-view-transition="theme"]::view-transition-old(root) {
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

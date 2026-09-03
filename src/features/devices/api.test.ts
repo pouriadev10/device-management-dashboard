@@ -55,7 +55,7 @@ describe("devices api", () => {
       name: "Edge-Router-02",
       ip: "10.0.0.42",
       status: "Warning",
-      lastPing: "Just now",
+      lastPingMinutesAgo: 0,
     });
     expect(created.id).toEqual(expect.any(String));
 

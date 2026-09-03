@@ -20,7 +20,7 @@ const created = {
   name: "Edge-Router-02",
   ip: "10.0.0.42",
   status: "Online",
-  lastPing: "Just now",
+  lastPingMinutesAgo: 0,
 } as const;
 
 function renderDialog() {

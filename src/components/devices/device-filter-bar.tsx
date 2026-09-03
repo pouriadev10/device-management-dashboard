@@ -2,12 +2,14 @@
 
 import { useEffect, useRef } from "react";
 
+import { SearchIcon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import {
   STATUS_FILTERS,
   type DeviceFilters,
   type StatusFilter,
 } from "@/features/devices/filter-params";
+import { useI18n } from "@/features/i18n/i18n-provider";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { cn } from "@/lib/cn";
 
@@ -26,6 +28,8 @@ export function DeviceFilterBar({
   onSearchChange,
   onStatusChange,
 }: DeviceFilterBarProps) {
+  const { t } = useI18n();
+
   // The field is uncontrolled so typing stays instant while the URL catches up
   // on its own schedule.
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,24 +58,26 @@ export function DeviceFilterBar({
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="relative w-full sm:max-w-xs">
         <label htmlFor="device-search" className="sr-only">
-          Search devices by name or IP address
+          {t("filters.search.label")}
         </label>
-        <SearchIcon />
+        <SearchIcon className="text-muted pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2" />
         <Input
           id="device-search"
           ref={inputRef}
           type="search"
           defaultValue={filters.search}
           onChange={(event) => publishSearch(event.target.value)}
-          placeholder="Search by name or IP"
-          className="pl-9"
+          placeholder={t("filters.search.placeholder")}
+          className="ps-9"
         />
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <fieldset className="min-w-0">
-          <legend className="sr-only">Filter by status</legend>
-          <div className="bg-surface-muted flex gap-1 rounded-xl border p-1">
+          <legend className="sr-only">{t("filters.status.legend")}</legend>
+          {/* Radios rather than buttons: one choice out of four, which is what a
+              radio group is, and arrow keys move between them for free. */}
+          <div className="bg-surface-muted rounded-control flex gap-1 border p-1">
             {STATUS_FILTERS.map((status) => {
               const isActive = filters.status === status;
 
@@ -79,10 +85,10 @@ export function DeviceFilterBar({
                 <label
                   key={status}
                   className={cn(
-                    "flex-1 cursor-pointer rounded-lg px-3 py-1.5 text-center text-sm font-medium whitespace-nowrap transition-colors sm:flex-none",
+                    "flex-1 cursor-pointer rounded-md px-3 py-1.5 text-center text-sm font-medium whitespace-nowrap transition-colors duration-150 ease-out sm:flex-none",
                     "focus-within:ring-ring focus-within:ring-2",
                     isActive
-                      ? "bg-surface text-foreground shadow-sm"
+                      ? "bg-surface text-foreground shadow-panel"
                       : "text-muted hover:text-foreground",
                   )}
                 >
@@ -94,7 +100,7 @@ export function DeviceFilterBar({
                     onChange={() => onStatusChange(status)}
                     className="sr-only"
                   />
-                  {status}
+                  {t(`status.${status}`)}
                 </label>
               );
             })}
@@ -104,21 +110,5 @@ export function DeviceFilterBar({
         <CopyLinkButton />
       </div>
     </div>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      className="text-muted pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-    >
-      <circle cx="9" cy="9" r="5.5" />
-      <path d="m13 13 4 4" strokeLinecap="round" />
-    </svg>
   );
 }

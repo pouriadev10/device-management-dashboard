@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { Device } from "@/features/devices/types";
+import { useI18n } from "@/features/i18n/i18n-provider";
 
 type DeleteDeviceButtonProps = {
   device: Device;
@@ -15,15 +16,17 @@ export function DeleteDeviceButton({
   device,
   onDelete,
 }: DeleteDeviceButtonProps) {
+  const { t } = useI18n();
+
   return (
     <Button
       variant="ghost"
       size="sm"
-      aria-label={`Delete ${device.name}`}
-      className="text-muted hover:text-rose-600 dark:hover:text-rose-400"
+      aria-label={t("devices.delete.label", { name: device.name })}
+      className="text-danger hover:bg-danger-soft hover:text-danger"
       onClick={() => onDelete(device)}
     >
-      Delete
+      {t("devices.delete")}
     </Button>
   );
 }

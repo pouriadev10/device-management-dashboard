@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { defaultTranslator, type Translator } from "@/features/i18n/translate";
+
 /**
  * The statuses a device can actually be in. Declared as a const tuple so it can
  * drive both the Zod schema and the UI (badges, filter options) from one place.
@@ -31,20 +33,36 @@ export const deviceSchema = z.object({
   name: z.string(),
   ip: z.string(),
   status: deviceStatusSchema,
-  lastPing: z.string(),
+  /**
+   * How long ago the device last answered, rather than a phrase like "2 mins
+   * ago". A stored sentence is stored in one language; the number can be worded
+   * in whichever language the page is being read in.
+   */
+  lastPingMinutesAgo: z.number().int().nonnegative(),
 });
 
-/** Shape of the "add device" form. `id` and `lastPing` are assigned on create. */
-export const newDeviceSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Device name is required")
-    .max(64, "Device name must be 64 characters or fewer"),
-  ip: z
-    .string()
-    .trim()
-    .min(1, "IP address is required")
-    .refine(isIpv4, "Enter a valid IPv4 address, e.g. 192.168.1.1"),
-  status: deviceStatusSchema,
-});
+/**
+ * Shape of the "add device" form. `id` and the ping age are assigned on create.
+ *
+ * Built around a translator because the messages are what the person filling the
+ * form reads, and they should not be in English on a Persian page. The export
+ * below binds the default one, so anything that only needs the shape — types,
+ * tests, a server-side check — can go on importing a plain schema.
+ */
+export function createNewDeviceSchema({ t }: Pick<Translator, "t">) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t("form.validation.name.required"))
+      .max(64, t("form.validation.name.max")),
+    ip: z
+      .string()
+      .trim()
+      .min(1, t("form.validation.ip.required"))
+      .refine(isIpv4, t("form.validation.ip.invalid")),
+    status: deviceStatusSchema,
+  });
+}
+
+export const newDeviceSchema = createNewDeviceSchema(defaultTranslator);

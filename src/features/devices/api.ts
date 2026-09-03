@@ -29,7 +29,8 @@ export async function createDevice(input: NewDeviceInput): Promise<Device> {
     name: input.name,
     ip: input.ip,
     status: input.status,
-    lastPing: "Just now",
+    // A device that has just been registered has this second as its last ping.
+    lastPingMinutesAgo: 0,
   };
 
   devices.unshift(device);

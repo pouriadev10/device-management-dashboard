@@ -56,7 +56,7 @@ describe("DeviceList", () => {
     expect(table.getByText("Core-Switch-01")).toBeVisible();
     expect(table.getByText("192.168.1.1")).toBeVisible();
     expect(table.getByText("Online")).toBeVisible();
-    expect(table.getByText("2 mins ago")).toBeVisible();
+    expect(table.getByText("2 minutes ago")).toBeVisible();
   });
 
   it("renders a card for each device alongside the table", () => {

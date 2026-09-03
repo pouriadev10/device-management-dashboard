@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 
-import { AddDeviceDialog } from "@/components/devices/add-device-dialog";
 import { DevicesDashboard } from "@/components/devices/devices-dashboard";
+import { DevicesHeader } from "@/components/devices/devices-header";
+import { getServerTranslator } from "@/features/i18n/server";
 
-export const metadata: Metadata = { title: "Devices" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getServerTranslator();
+
+  return { title: t("devices.title") };
+}
 
 export default async function DevicesPage(props: PageProps<"/devices">) {
   // Reading searchParams opts this route into dynamic rendering, which is what
@@ -14,21 +19,9 @@ export default async function DevicesPage(props: PageProps<"/devices">) {
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Devices
-          </h1>
-          <p className="text-muted text-sm">
-            Every device registered on the network, with its current
-            reachability.
-          </p>
-        </div>
+      <DevicesHeader />
 
-        <AddDeviceDialog />
-      </div>
-
-      <div className="mt-6">
+      <div className="mt-8">
         <DevicesDashboard />
       </div>
     </main>

@@ -1,14 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { DEVICE_STATUSES, newDeviceSchema } from "@/features/devices/schemas";
+import {
+  createNewDeviceSchema,
+  DEVICE_STATUSES,
+} from "@/features/devices/schemas";
 import type { NewDeviceInput } from "@/features/devices/types";
+import { useI18n } from "@/features/i18n/i18n-provider";
 
 type AddDeviceFormProps = {
   onSubmit: (device: NewDeviceInput) => void;
@@ -27,46 +32,55 @@ export function AddDeviceForm({
   onCancel,
   isSubmitting = false,
 }: AddDeviceFormProps) {
+  const i18n = useI18n();
+  const { t } = i18n;
+
+  // The schema carries the messages someone reads when they get it wrong, so it
+  // is rebuilt when the language changes rather than pinned to English.
+  const schema = useMemo(() => createNewDeviceSchema(i18n), [i18n]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<NewDeviceInput>({
-    resolver: zodResolver(newDeviceSchema),
+    resolver: zodResolver(schema),
     defaultValues: DEFAULT_VALUES,
   });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-      <Field label="Device name" error={errors.name?.message}>
+      <Field label={t("form.name.label")} error={errors.name?.message}>
         {(field) => (
           <Input
             {...field}
             autoFocus
-            placeholder="Core-Switch-02"
+            placeholder={t("form.name.placeholder")}
             {...register("name")}
           />
         )}
       </Field>
 
-      <Field label="IP address" error={errors.ip?.message}>
+      <Field label={t("form.ip.label")} error={errors.ip?.message}>
         {(field) => (
           <Input
             {...field}
             inputMode="numeric"
-            placeholder="192.168.1.2"
+            // An address is written left to right whatever the page direction.
+            dir="ltr"
+            placeholder={t("form.ip.placeholder")}
             className="font-mono"
             {...register("ip")}
           />
         )}
       </Field>
 
-      <Field label="Initial status" error={errors.status?.message}>
+      <Field label={t("form.status.label")} error={errors.status?.message}>
         {(field) => (
           <Select {...field} {...register("status")}>
             {DEVICE_STATUSES.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {t(`status.${status}`)}
               </option>
             ))}
           </Select>
@@ -75,10 +89,10 @@ export function AddDeviceForm({
 
       <div className="flex justify-end gap-2 pt-2">
         <Button variant="secondary" onClick={onCancel}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Adding…" : "Add device"}
+          {isSubmitting ? t("devices.add.pending") : t("devices.add")}
         </Button>
       </div>
     </form>
